@@ -17,7 +17,7 @@ export async function tenantRoutes(app: FastifyInstance): Promise<void> {
    * tak bisa di-undo). Operator only + konfirmasi eksplisit. Tenant diambil dari
    * token (tak bisa menghapus tenant lain).
    */
-  app.post('/v1/tenant/erase', { onRequest: [requireRole('operator')] }, async (req) => {
+  app.post('/v1/tenant/erase', { onRequest: [requireRole('operator')], schema: { tags: ['Tenant'], summary: 'GDPR erasure — hapus seluruh data tenant', security: [{ bearerAuth: [] }], body: eraseSchema } }, async (req) => {
     const { tenantId } = req.auth!;
     const parsed = eraseSchema.safeParse(req.body);
     if (!parsed.success) {

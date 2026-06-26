@@ -28,7 +28,7 @@ export async function knowledgeRoutes(app: FastifyInstance): Promise<void> {
   app.addHook('onRequest', authenticate);
 
   /** Ingest pengetahuan untuk sebuah agent (FR-2). Hanya operator. */
-  app.post('/v1/agents/:agentId/knowledge', { onRequest: [requireRole('operator')] }, async (req) => {
+  app.post('/v1/agents/:agentId/knowledge', { onRequest: [requireRole('operator')], schema: { tags: ['Knowledge'], summary: 'Ingest knowledge (RAG)', security: [{ bearerAuth: [] }], params: z.object({ agentId: z.string().uuid() }), body: ingestSchema } }, async (req) => {
     const { tenantId } = req.auth!;
     const { agentId } = req.params as { agentId: string };
     await assertAgent(tenantId, agentId);

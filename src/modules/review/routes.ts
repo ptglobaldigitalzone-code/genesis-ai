@@ -18,7 +18,7 @@ export async function reviewRoutes(app: FastifyInstance): Promise<void> {
   app.addHook('onRequest', authenticate);
 
   /** Review queue (FR-13): percakapan yang menunggu tindakan manusia. */
-  app.get('/v1/review-queue', async (req) => {
+  app.get('/v1/review-queue', { schema: { tags: ['Review'], summary: 'Review queue', security: [{ bearerAuth: [] }] } }, async (req) => {
     const { tenantId } = req.auth!;
     return db
       .select()
@@ -34,7 +34,7 @@ export async function reviewRoutes(app: FastifyInstance): Promise<void> {
    */
   app.post(
     '/v1/conversations/:id/review',
-    { onRequest: [requireRole('reviewer', 'operator')] },
+    { onRequest: [requireRole('reviewer', 'operator')], schema: { tags: ['Review'], summary: 'Approve/edit/reject draf', security: [{ bearerAuth: [] }], params: z.object({ id: z.string().uuid() }), body: actionSchema } },
     async (req) => {
       const { tenantId, userId } = req.auth!;
       const { id } = req.params as { id: string };

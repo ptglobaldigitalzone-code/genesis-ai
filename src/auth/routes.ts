@@ -23,8 +23,11 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
    * POST /v1/auth/register
    * Membuat tenant baru + user operator pertama (founder/admin tenant).
    */
-  app.post('/v1/auth/register', async (req) => {
-    const { tenantName, email, password } = registerSchema.parse(req.body);
+  app.post(
+    '/v1/auth/register',
+    { schema: { tags: ['Auth'], summary: 'Daftar tenant + operator pertama', body: registerSchema } },
+    async (req) => {
+      const { tenantName, email, password } = registerSchema.parse(req.body);
 
     const existing = await db.select().from(users).where(eq(users.email, email)).limit(1);
     if (existing.length > 0) throw Errors.conflict('Email sudah terdaftar');
@@ -56,8 +59,11 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
   /**
    * POST /v1/auth/login
    */
-  app.post('/v1/auth/login', async (req) => {
-    const { email, password } = loginSchema.parse(req.body);
+  app.post(
+    '/v1/auth/login',
+    { schema: { tags: ['Auth'], summary: 'Login → JWT', body: loginSchema } },
+    async (req) => {
+      const { email, password } = loginSchema.parse(req.body);
 
     const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
     if (!user) throw Errors.unauthorized('Email atau password salah');

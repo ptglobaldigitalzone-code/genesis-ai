@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .env
+openapi.json
 *.log
 .DS_Store
 drizzle/meta/

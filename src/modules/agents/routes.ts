@@ -27,7 +27,7 @@ export async function agentRoutes(app: FastifyInstance): Promise<void> {
   app.addHook('onRequest', authenticate);
 
   /** Buat agent (AI Employee) baru — hanya operator. */
-  app.post('/v1/agents', { onRequest: [requireRole('operator')] }, async (req) => {
+  app.post('/v1/agents', { onRequest: [requireRole('operator')], schema: { tags: ['Agents'], summary: 'Buat AI Employee', security: [{ bearerAuth: [] }], body: createSchema } }, async (req) => {
     const { tenantId } = req.auth!;
     const body = createSchema.parse(req.body);
 
@@ -42,13 +42,13 @@ export async function agentRoutes(app: FastifyInstance): Promise<void> {
   });
 
   /** List agent milik tenant. */
-  app.get('/v1/agents', async (req) => {
+  app.get('/v1/agents', { schema: { tags: ['Agents'], summary: 'List agent tenant', security: [{ bearerAuth: [] }] } }, async (req) => {
     const { tenantId } = req.auth!;
     return db.select().from(agents).where(eq(agents.tenantId, tenantId));
   });
 
   /** Detail satu agent (ter-scope tenant). */
-  app.get('/v1/agents/:id', async (req) => {
+  app.get('/v1/agents/:id', { schema: { tags: ['Agents'], summary: 'Detail agent', security: [{ bearerAuth: [] }], params: z.object({ id: z.string().uuid() }) } }, async (req) => {
     const { tenantId } = req.auth!;
     const { id } = req.params as { id: string };
     const [agent] = await db
@@ -64,7 +64,7 @@ export async function agentRoutes(app: FastifyInstance): Promise<void> {
    * Ubah autonomy level (trust ladder, FR-12).
    * Catatan: di iterasi berikutnya, naik ke 'autonomous' digate oleh ambang eval.
    */
-  app.patch('/v1/agents/:id/autonomy', { onRequest: [requireRole('operator')] }, async (req) => {
+  app.patch('/v1/agents/:id/autonomy', { onRequest: [requireRole('operator')], schema: { tags: ['Agents'], summary: 'Ubah autonomy (trust ladder)', security: [{ bearerAuth: [] }], params: z.object({ id: z.string().uuid() }), body: autonomySchema } }, async (req) => {
     const { tenantId } = req.auth!;
     const { id } = req.params as { id: string };
     const { autonomy } = autonomySchema.parse(req.body);
@@ -93,7 +93,7 @@ export async function agentRoutes(app: FastifyInstance): Promise<void> {
    * KILL SWITCH (incident response) — turunkan SEMUA agent tenant ke level aman
    * seketika. Tidak di-gate (menurunkan otonomi selalu boleh & aman).
    */
-  app.post('/v1/kill-switch', { onRequest: [requireRole('operator')] }, async (req) => {
+  app.post('/v1/kill-switch', { onRequest: [requireRole('operator')], schema: { tags: ['Agents'], summary: 'Kill switch — turunkan semua agent ke level aman', security: [{ bearerAuth: [] }], body: killSwitchSchema } }, async (req) => {
     const { tenantId } = req.auth!;
     const { level, reason } = killSwitchSchema.parse(req.body);
 

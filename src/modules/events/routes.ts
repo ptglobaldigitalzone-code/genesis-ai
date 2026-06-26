@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify';
+import { z } from 'zod';
 import { and, eq, desc } from 'drizzle-orm';
 import { db } from '../../db/index.js';
 import { events } from '../../db/schema.js';
@@ -11,7 +12,7 @@ export async function eventRoutes(app: FastifyInstance): Promise<void> {
   app.addHook('onRequest', authenticate);
 
   /** Semua event sebuah percakapan (urut waktu) — jejak penalaran agent. */
-  app.get('/v1/conversations/:id/events', async (req) => {
+  app.get('/v1/conversations/:id/events', { schema: { tags: ['Events'], summary: 'Replay jejak event percakapan', security: [{ bearerAuth: [] }], params: z.object({ id: z.string().uuid() }) } }, async (req) => {
     const { tenantId } = req.auth!;
     const { id } = req.params as { id: string };
     return db
@@ -22,7 +23,7 @@ export async function eventRoutes(app: FastifyInstance): Promise<void> {
   });
 
   /** Audit log tenant (terbaru). */
-  app.get('/v1/events', async (req) => {
+  app.get('/v1/events', { schema: { tags: ['Events'], summary: 'Audit log tenant', security: [{ bearerAuth: [] }] } }, async (req) => {
     const { tenantId } = req.auth!;
     return db
       .select()

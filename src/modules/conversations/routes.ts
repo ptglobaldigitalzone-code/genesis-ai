@@ -27,7 +27,7 @@ export async function conversationRoutes(app: FastifyInstance): Promise<void> {
    * Channel Ingress (FR-5/FR-6) — simulasi webhook tiket masuk.
    * Membuat percakapan + pesan pelanggan, lalu enqueue untuk diproses async.
    */
-  app.post('/v1/inbound', { onRequest: [inboundLimit] }, async (req) => {
+  app.post('/v1/inbound', { onRequest: [inboundLimit], schema: { tags: ['Conversations'], summary: 'Channel ingress — tiket masuk', security: [{ bearerAuth: [] }], body: inboundSchema } }, async (req) => {
     const { tenantId } = req.auth!;
     const body = inboundSchema.parse(req.body);
 
@@ -54,7 +54,7 @@ export async function conversationRoutes(app: FastifyInstance): Promise<void> {
   });
 
   /** List percakapan tenant (opsional filter status). */
-  app.get('/v1/conversations', async (req) => {
+  app.get('/v1/conversations', { schema: { tags: ['Conversations'], summary: 'List percakapan', security: [{ bearerAuth: [] }], querystring: z.object({ status: z.string().optional() }) } }, async (req) => {
     const { tenantId } = req.auth!;
     const { status } = req.query as { status?: string };
     const rows = await db
@@ -71,7 +71,7 @@ export async function conversationRoutes(app: FastifyInstance): Promise<void> {
   });
 
   /** Detail percakapan + transcript (replay manusiawi, FR-16). */
-  app.get('/v1/conversations/:id', async (req) => {
+  app.get('/v1/conversations/:id', { schema: { tags: ['Conversations'], summary: 'Detail + transcript', security: [{ bearerAuth: [] }], params: z.object({ id: z.string().uuid() }) } }, async (req) => {
     const { tenantId } = req.auth!;
     const { id } = req.params as { id: string };
 

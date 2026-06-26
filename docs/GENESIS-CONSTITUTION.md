@@ -52,7 +52,7 @@ Tidak ada agent atau manusia yang boleh menimpa pasal di sini tanpa **amandemen*
 **Aturan:** Setiap endpoint publik terdefinisi dalam spesifikasi **OpenAPI** yang diturunkan dari schema validasi (satu sumber).
 **Alasan:** Kontrak yang jelas = integrasi mudah, SDK ter-generate, dokumentasi tak pernah basi. API tanpa kontrak adalah jebakan bagi integrator.
 **Dilarang:** endpoint tanpa schema; dokumentasi API yang ditulis terpisah dari validasi (rawan drift).
-**Penegakan:** OpenAPI di-generate dari Zod; `GET /docs`. Lihat [API-DESIGN §5](API-DESIGN.md). *(Status: utang tercatat — lihat Ledger.)*
+**Penegakan:** OpenAPI di-generate dari Zod (single source) → `/openapi.json` + Swagger UI `/docs` (18 endpoint terverifikasi). Lihat [API-DESIGN §5](API-DESIGN.md).
 **Penanggung jawab:** Backend-agent.
 
 ### Pasal 6 — Tidak ada business logic tersembunyi
@@ -130,10 +130,10 @@ Konstitusi mengikat ke depan; ini status sekarang. Gap = **utang yang disetujui*
 | Pasal | Status | Catatan / utang disetujui |
 |---|---|---|
 | 1 Debt tercatat | 🟡 | Ledger ini sendiri pemenuhannya; utang di bawah tercatat |
-| 2 Keamanan>kecepatan | 🟢 | Tenant scope, no-secret terverifikasi; **RLS** masih utang (Sprint 4) |
+| 2 Keamanan>kecepatan | 🟢 | Tenant scope, no-secret terverifikasi; **RLS** ditulis (`rls.sql`+`withTenant`), aktivasi+verifikasi menunggu DB |
 | 3 Dokumentasi | 🟢 | `docs/` lengkap & sinkron dengan kode |
 | 4 Test tiap fitur | 🟡 | eval 12/12, core 11/11, ratelimit 6/6; **integration test e2e** utang (butuh Docker) |
-| 5 OpenAPI | 🔴 **utang** | Belum di-generate; dijadwalkan Sprint 4 ([API-DESIGN §5](API-DESIGN.md)) |
+| 5 OpenAPI | 🟢 | Di-generate dari Zod (single source), tersaji `/openapi.json` + `/docs`; 18 endpoint terverifikasi |
 | 6 No hidden logic | 🟢 | Logika di service/fungsi murni; guardrail di kode |
 | 7 ADR | 🟢 | ADR-0001…0008 ada |
 | 8 PRD dulu | 🟢 | PRD master + v1 ada sebelum kode |
@@ -141,7 +141,7 @@ Konstitusi mengikat ke depan; ini status sekarang. Gap = **utang yang disetujui*
 | 10 AI autonomy gate | 🟢 | Trust ladder + eval gate terverifikasi |
 | 11 No secret / traceable | 🟢 | `.env` ignored; event log append-only |
 
-**Utang aktif yang disetujui (Pasal 1):** OpenAPI (Pasal 5), Postgres RLS (Pasal 2), integration test e2e + CI (Pasal 4). Semua terjadwal di [SPRINT-PLAN.md](SPRINT-PLAN.md) Sprint 4. Tidak ada utang tersembunyi.
+**Utang aktif yang disetujui (Pasal 1):** Postgres RLS (Pasal 2), integration test e2e + CI (Pasal 4) — keduanya butuh Docker/DB untuk verifikasi. Terjadwal di [SPRINT-PLAN.md](SPRINT-PLAN.md) Sprint 4. Tidak ada utang tersembunyi. *(OpenAPI — Pasal 5 — sudah lunas.)*
 
 ---
 

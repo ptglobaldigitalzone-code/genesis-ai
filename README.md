@@ -83,14 +83,16 @@ memaksa **escalated** apa pun autonomy level-nya (Handbook §4–§5).
 | **1** | Fondasi, multi-tenancy, auth, agent, event log | `config`, `db`, `auth`, `modules/agents`, `modules/events` |
 | **2** | Knowledge Base (RAG) + AI Runtime + guardrails | `modules/knowledge`, `ai/` |
 | **3** | Workflow Engine, trust ladder, queue, review, metrics | `workflow`, `queue`, `modules/{conversations,review,metrics}` |
-| **4** | Eval harness + autonomy gating *(inti — sebagian)* | `ai/decision.ts`, `eval/` |
+| **4** | Eval harness + gating, rate limit, kill switch, erasure, OpenAPI *(sebagian)* | `ai/decision.ts`, `eval/`, `lib/ratelimit.ts`, `modules/tenants/`, `server.ts` |
 
-Jalankan eval: `npm run eval` (deterministik, tanpa DB/API key; exit≠0 bila safety gate gagal → siap CI).
+Verifikasi (tanpa DB/Docker): `npm run eval` · `npm run openapi` · `tsx scripts/verify-core.ts` · `tsx scripts/verify-ratelimit.ts`. OpenAPI/Swagger UI di `/docs`, spec di `/openapi.json`.
 
 ## Status
 
-Backend vertical slice yang runnable + eval harness keselamatan dengan autonomy gating
-(naik ke `act_with_review`/`autonomous` diblokir bila eval belum lolos — terverifikasi).
-Yang **belum** dari Sprint 4: Postgres RLS, rate limiting, OpenAPI, prosedur tenant data
-erasure, integration test (butuh Docker). Sprint 5 (UI console) belum mulai.
-Lihat [docs/SPRINT-PLAN.md](docs/SPRINT-PLAN.md).
+Backend vertical slice runnable + Sprint 4 (sebagian): eval harness + autonomy gating
+(naik ke `act_with_review`/`autonomous` diblokir bila eval gagal — terverifikasi),
+rate limiting per-tenant, kill switch, tenant data erasure, dan **OpenAPI dari Zod**
+(18 endpoint, single-source, tersaji `/docs`). **Semua suite hijau** (typecheck, eval,
+core, ratelimit, openapi).
+Yang **belum** dari Sprint 4: Postgres RLS + integration test e2e (butuh Docker). Sprint 5
+(UI console) belum mulai. Lihat [docs/SPRINT-PLAN.md](docs/SPRINT-PLAN.md).

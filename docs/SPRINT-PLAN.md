@@ -10,8 +10,8 @@
 | **1** | Fondasi & Multi-tenancy | ✅ **Selesai** | M1 |
 | **2** | Knowledge Base & AI Runtime | ✅ **Selesai** | M1→M2 |
 | **3** | Workflow, Trust Ladder, Queue, Review, Metrics | ✅ **Selesai** | M2 |
-| **4** | Quality & Safety: Eval harness + hardening + keamanan | 🚧 **Berjalan** (eval, gating, rate limit, kill switch, erasure ✅) | M2→M3 |
-| **5** | Operator Console (UI) + onboarding self-serve | 📋 **Direncanakan** | M3 (v1.0) |
+| **4** | Quality & Safety: Eval harness + hardening + keamanan | 🚧 **Berjalan** (eval, gating, rate limit, kill switch, erasure, OpenAPI ✅; sisa: RLS, CI/e2e) | M2→M3 |
+| **5** | Operator Console (UI) + onboarding self-serve | 🚧 **Mulai** (scaffold: login, dashboard+trust ladder, review queue) | M3 (v1.0) |
 
 > Sprint sequensial, di-gate oleh pembelajaran (bukan tanggal kaku). Definition of Done global: [ENGINEERING-BIBLE.md §13](ENGINEERING-BIBLE.md).
 
@@ -69,18 +69,20 @@
 3. ✅ **Rate limiting** — IP global + per-tenant di jalur mahal (`src/lib/ratelimit.ts`), respons 429. 6/6 test lulus.
 4. ✅ **Kill switch** — `POST /v1/kill-switch` turunkan semua agent ke level aman seketika.
 5. ✅ **Tenant data erasure** — `POST /v1/tenant/erase` (`src/modules/tenants/erasure.ts`): cascade inti + hapus eksplisit tabel log tanpa-FK, transaksional. Membayar utang GDPR DATABASE §6.
-6. ⏳ **Postgres RLS** — lapis kedua isolasi tenant *(belum — butuh migrasi SQL + DB untuk verifikasi)*.
-7. ⏳ **OpenAPI** dari schema Zod + `GET /docs` *(belum — refactor schema route)*.
+6. 🟡 **Postgres RLS** — ditulis: `src/db/rls.sql` (policies + FORCE) + helper `withTenant()` + `npm run db:rls`. Sengaja **belum auto-enable** (agar app jalan tak terganggu); aktivasi & verifikasi menunggu DB.
+7. ✅ **OpenAPI** dari schema Zod (single source) → `/openapi.json` + Swagger UI `/docs`. 18 endpoint, terverifikasi via `app.inject()` tanpa DB (`npm run openapi`).
 8. ⏳ **CI integration** + **integration tests** end-to-end *(belum — butuh Docker untuk DB+Redis)*.
 9. ⏳ Audit `npm audit` kritikal beres *(belum)*.
 
-**DoD (sebagian tercapai):** eval harness jalan & memberi skor ✅; `autonomous` ter-gate ✅; rate limit aktif ✅; kill switch ✅; erasure ✅. Sisa: RLS, OpenAPI, CI/integration test, audit.
+**DoD (sebagian tercapai):** eval harness ✅; `autonomous` ter-gate ✅; rate limit ✅; kill switch ✅; erasure ✅; **OpenAPI ✅**. Sisa: RLS, CI/integration test, audit.
 
 **Dependency:** Sprint 1–3. **Risiko:** kualitas dataset eval menentukan nilai gate — butuh contoh nyata dari design partner. Item tersisa butuh Docker/DB untuk verifikasi runtime.
 
-## 📋 Sprint 5 — Operator Console (UI) + Onboarding Self-Serve
+## 🚧 Sprint 5 — Operator Console (UI) + Onboarding Self-Serve  *(scaffold dimulai)*
 
 **Goal:** mewujudkan [UX blueprint](UX.md) jadi console nyata sehingga operator non-teknis bisa jalan **< 1 hari** tanpa bantuan (target M3 / v1.0).
+
+**Status awal (sudah ada di `web/`, Next.js, typecheck bersih):** `/login`, `/dashboard` (KPI + Trust Ladder control), `/review` (review queue approve/reject), API client typed (konsumen `/v1`). **Belum:** workspace lengkap, knowledge UI, conversation replay, settings, billing, onboarding wizard, managed auth.
 
 **Scope (Next.js, konsumen API `/v1` — API First):**
 1. **Auth & onboarding wizard** — signup → buat agent ("Hire Agent") → ingest knowledge → set channel → live. Target TTV < 1 hari.

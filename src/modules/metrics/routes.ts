@@ -11,7 +11,7 @@ import { authenticate } from '../../auth/middleware.js';
 export async function metricsRoutes(app: FastifyInstance): Promise<void> {
   app.addHook('onRequest', authenticate);
 
-  app.get('/v1/metrics', async (req) => {
+  app.get('/v1/metrics', { schema: { tags: ['Metrics'], summary: 'KPI tenant (resolution, escalation, cost)', security: [{ bearerAuth: [] }] } }, async (req) => {
     const { tenantId } = req.auth!;
 
     const [statusCounts, sentCount, escalatedCount, reviewCount, cost] = await Promise.all([
