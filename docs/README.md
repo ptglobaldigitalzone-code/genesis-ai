@@ -6,6 +6,7 @@
 
 | Dokumen | EN | ID | Isi |
 |---|---|---|---|
+| **Genesis Constitution** ⚖️ | — | [GENESIS-CONSTITUTION.md](GENESIS-CONSTITUTION.md) | **Hukum tertinggi** — aturan tak boleh dilanggar AI & manusia; tata kelola multi-agent; ledger kepatuhan |
 | **Vision 2030** ⭐ | [VISION-2030.md](VISION-2030.md) | — | North Star perusahaan — why we exist, visi 10-tahun, mission, market, competitive advantage, core values |
 | **Foundation** | [FOUNDATION.md](FOUNDATION.md) | [FOUNDATION.id.md](FOUNDATION.id.md) | Vision, Mission, Values, Product/Engineering Principles, Business Model, Revenue, GTM, Competitive, Pricing, Target Customer |
 | **Master PRD** | [PRD-MASTER.md](PRD-MASTER.md) | — | Single source of truth tingkat-perusahaan — 19 bagian (exec summary → roadmap), seluruh produk |
